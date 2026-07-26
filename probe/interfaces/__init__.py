@@ -1,14 +1,16 @@
-"""Abstract interface definitions for platform inversion of control."""
+"""Segregated interface protocols and universal routing designators for DriftGuard Probe."""
+from .context import ResourceContext
+from .telemetry import TelemetryProvider
+from .governance import GovernanceProvider
+from .execution import ExecutionProvider
+from .knowledge import KnowledgeProvider
 from .adapter import PlatformProvider
-from .llm import LLMProvider
-from .memory import MemoryProvider
-from .tool import ToolProvider
-from .storage import StorageProvider
 
 __all__ = [
+    "ResourceContext",
+    "TelemetryProvider",
+    "GovernanceProvider",
+    "ExecutionProvider",
+    "KnowledgeProvider",
     "PlatformProvider",
-    "LLMProvider",
-    "MemoryProvider",
-    "ToolProvider",
-    "StorageProvider",
 ]

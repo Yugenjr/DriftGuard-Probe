@@ -1,19 +1,36 @@
-"""Critic Agent placeholder for adversarial confirmation bias elimination."""
+"""Adversarial Critic cognitive reasoning agent executing red-team stress tests on candidate theories."""
 import logging
 from typing import Any, Dict
 from .base import BaseAgent
-from ..core.state import InvestigationState
+from ..engine.state import InvestigationSession
+from ..services.correlation import SimulationReplayEngine
 
 logger = logging.getLogger(__name__)
 
 
-class CriticAgent(BaseAgent):
-    """Planned agent adversarially debating generated hypotheses to expose logical blindspots and confirmation bias."""
+class AdversarialCriticAgent(BaseAgent):
+    """Red-team adversarial hypothesis falsification and statistical simulation critic.
+    
+    Invokes rigorous empirical replay simulations to attempt to refute candidate causal theories.
+    """
     @property
     def role_name(self) -> str:
-        return "Critic"
+        return "Adversarial Falsification Critic"
 
-    async def execute(self, state: InvestigationState, **kwargs: Any) -> Dict[str, Any]:
-        logger.info("Critic Agent interrogating %d hypotheses for session %s", len(state.hypotheses), state.investigation_id)
-        # TODO: Implementation pending for automated refutation counter-evidence logic
-        return {"critique_status": "PASSED", "challenges_generated": 0}
+    async def execute(self, state: InvestigationSession, **kwargs: Any) -> Dict[str, Any]:
+        logger.info("AdversarialCriticAgent running red-team simulation stress tests for %s", state.session_id)
+        
+        results = []
+        for hyp in state.hypotheses:
+            res = await SimulationReplayEngine.stress_test_hypothesis(
+                hypothesis_id=hyp.hypothesis_id,
+                proposed_root_cause=hyp.title
+            )
+            if res.get("simulation_passed"):
+                hyp.verified_by_simulation = True
+            results.append(res)
+
+        state.execution_history.append(
+            f"[{state.updated_at.isoformat()}] [Adversarial Critic] Executed empirical falsification benchmarks across {len(state.hypotheses)} hypotheses."
+        )
+        return {"status": "FALSIFICATION_EVALUATED", "verified_count": len(state.hypotheses), "stress_test_results": results}

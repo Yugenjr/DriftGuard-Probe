@@ -1,25 +1,42 @@
-"""Dependency injection runtime container."""
+"""Dependency injection runtime container enforcing interface segregation."""
 from typing import Optional
 from .config import Settings, get_settings
 from ..interfaces.adapter import PlatformProvider
+from ..interfaces.telemetry import TelemetryProvider
+from ..interfaces.governance import GovernanceProvider
+from ..interfaces.execution import ExecutionProvider
 from ..interfaces.llm import LLMProvider
 from ..interfaces.memory import MemoryProvider
 from ..interfaces.storage import StorageProvider
 
 
 class Container:
-    """Inversion of Control runtime container managing application providers and adapters.
+    """Inversion of Control runtime container managing segregated providers and capabilities.
     
-    Ensures zero coupling between core reasoning workflows and underlying concrete platforms.
+    Ensures zero coupling between core reasoning workflows, analytical tools, and concrete vendors.
     """
     def __init__(self, settings: Optional[Settings] = None):
         self.settings = settings or get_settings()
-        self.platform_provider: Optional[PlatformProvider] = None
+        self.telemetry_provider: Optional[TelemetryProvider] = None
+        self.governance_provider: Optional[GovernanceProvider] = None
+        self.execution_provider: Optional[ExecutionProvider] = None
         self.llm_provider: Optional[LLMProvider] = None
         self.memory_provider: Optional[MemoryProvider] = None
         self.storage_provider: Optional[StorageProvider] = None
 
-        # TODO: Implementation pending for automatic provider initialization from config strings
+    @property
+    def platform_provider(self) -> Optional[PlatformProvider]:
+        """Convenience accessor for aggregate full-stack platforms (e.g. DriftGuard)."""
+        if isinstance(self.telemetry_provider, PlatformProvider):
+            return self.telemetry_provider
+        return None
+
+    @platform_provider.setter
+    def platform_provider(self, provider: Optional[PlatformProvider]) -> None:
+        """Assign aggregate platform provider to all three segregated capability boundaries."""
+        self.telemetry_provider = provider
+        self.governance_provider = provider
+        self.execution_provider = provider
 
 
 _global_container: Optional[Container] = None

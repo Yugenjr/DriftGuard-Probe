@@ -56,3 +56,10 @@ target-version = "py312"
 
 [project.scripts]
 probe = "probe.cli.main:main"
+
+[project.entry-points."probe.adapters"]
+driftguard = "probe_adapters.driftguard.client:DriftGuardAdapter"
+whylabs = "probe_adapters.whylabs.client:WhyLabsTelemetryAdapter"
+evidently = "probe_adapters.evidently.client:EvidentlyTelemetryAdapter"
+arize = "probe_adapters.arize.client:ArizeTelemetryAdapter"
+
